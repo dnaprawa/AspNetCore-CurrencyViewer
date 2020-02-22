@@ -1,4 +1,6 @@
-﻿using Moq;
+﻿using CurrencyViewer.Application.Models;
+using Microsoft.Extensions.Options;
+using Moq;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -11,7 +13,9 @@ namespace CurrencyViewer.Application.Tests
         [Fact]
         public async Task ShouldReturnAnythingForCurrentDate()
         {
-            ICurrencyRatesReceiver receiver = new CurrencyRatesReceiver();
+            var options = new Mock<IOptions<CurrencyRatesConfig>>();
+
+            ICurrencyRatesReceiver receiver = new CurrencyRatesReceiver(options.Object);
 
             var result = await receiver.GetCurrencyRatesAsync(DateTime.UtcNow.Date);
 

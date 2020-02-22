@@ -4,10 +4,11 @@ namespace CurrencyViewer.Domain
 {
     public class CurrencyRate
     {
-        public CurrencyRate(CurrencyType currencyType, double value)
+        public CurrencyRate(CurrencyType currencyType, double bidValue, double askValue)
         {
             CurrencyType = currencyType;
-            Value = value;
+            BidValue = bidValue;
+            AskValue = askValue;
             Date = DateTime.UtcNow.Date;
             ReceivedAt = DateTime.UtcNow;
         }
@@ -16,8 +17,10 @@ namespace CurrencyViewer.Domain
 
         public int Id { get; set; }
         public CurrencyType CurrencyType { get; protected set; }
-        public double Value { get; set; }
+        public double BidValue { get; protected set; }
+        public double AskValue { get; protected set; }
         public DateTime Date { get; protected set; }
         public DateTime ReceivedAt { get; protected set; }
+        
     }
 }

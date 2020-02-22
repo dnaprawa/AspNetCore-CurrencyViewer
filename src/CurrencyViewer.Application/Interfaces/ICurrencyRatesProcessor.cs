@@ -6,6 +6,6 @@ namespace CurrencyViewer.Application.Interfaces
 {
     public interface ICurrencyRatesProcessor
     {
-        Task SaveToDatabase(IEnumerable<CurrencyRate> currencyRates);
+        Task SaveToDatabaseAsync(IEnumerable<CurrencyRate> currencyRates);
     }
 }

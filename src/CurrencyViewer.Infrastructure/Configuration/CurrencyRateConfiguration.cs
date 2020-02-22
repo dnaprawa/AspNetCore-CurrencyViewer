@@ -16,7 +16,10 @@ namespace CurrencyViewer.Infrastructure.Configuration
             builder.Property(x => x.CurrencyType)
                 .IsRequired();
 
-            builder.Property(x => x.Value)
+            builder.Property(x => x.BidValue)
+              .IsRequired();
+
+            builder.Property(x => x.AskValue)
               .IsRequired();
 
             builder.Property(x => x.ReceivedAt)
