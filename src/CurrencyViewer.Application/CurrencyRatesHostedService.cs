@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using CurrencyViewer.Application.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -29,11 +30,15 @@ namespace CurrencyViewer.Application
             {
                 using (var scope = Services.CreateScope())
                 {
-                    var service =
+                    var receiver =
                         scope.ServiceProvider
                             .GetRequiredService<ICurrencyRatesReceiver>();
+                    var commandService =
+                        scope.ServiceProvider
+                            .GetRequiredService<ICurrencyRatesCommandService>();
 
-                    service.GetCurrencyRatesAsync(DateTime.UtcNow.Date).GetAwaiter().GetResult();
+                    var rates = receiver.GetCurrencyRatesAsync(DateTime.UtcNow.Date).GetAwaiter().GetResult();
+                    await commandService.SaveCurrencyRates(rates);
                 }
 
                 await Task.Delay(TimeSpan.FromDays(1), stoppingToken);

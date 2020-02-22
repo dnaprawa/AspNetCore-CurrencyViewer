@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Moq;
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -15,7 +16,9 @@ namespace CurrencyViewer.Application.Tests
         {
             var options = new Mock<IOptions<CurrencyRatesConfig>>();
 
-            ICurrencyRatesReceiver receiver = new CurrencyRatesReceiver(options.Object);
+            var factoryMock = new Mock<IHttpClientFactory>();
+
+            ICurrencyRatesReceiver receiver = new CurrencyRatesReceiver(options.Object, factoryMock.Object);
 
             var result = await receiver.GetCurrencyRatesAsync(DateTime.UtcNow.Date);
 

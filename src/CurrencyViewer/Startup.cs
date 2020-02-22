@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CurrencyViewer.Application;
+using CurrencyViewer.Application.Interfaces;
 using CurrencyViewer.Application.Models;
+using CurrencyViewer.Application.Services;
 using CurrencyViewer.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -37,6 +40,12 @@ namespace CurrencyViewer.API
             });
 
             services.Configure<CurrencyRatesConfig>(Configuration.GetSection(CurrencyRatesConfig.JsonPropertyName));
+            services.AddHostedService<CurrencyRatesHostedService>();
+            services.AddScoped<ICurrencyRatesReceiver, CurrencyRatesReceiver>();
+            services.AddScoped<ICurrencyRatesProcessor, CurrencyRatesProcessor>();
+            services.AddScoped<ICurrencyRatesQueryService, CurrencyRatesQueryService>();
+            services.AddScoped<ICurrencyRatesCommandService, CurrencyRatesCommandService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
