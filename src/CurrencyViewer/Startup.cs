@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace CurrencyViewer
+namespace CurrencyViewer.API
 {
     public class Startup
     {
