@@ -10,5 +10,11 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.10" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CurrencyViewer.Application\CurrencyViewer.Application.csproj" />
+    <ProjectReference Include="..\CurrencyViewer.Domain\CurrencyViewer.Domain.csproj" />
+    <ProjectReference Include="..\CurrencyViewer.Infrastructure\CurrencyViewer.Infrastructure.csproj" />
+  </ItemGroup>
+
 
 </Project>

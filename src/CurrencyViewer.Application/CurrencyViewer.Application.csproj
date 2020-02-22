@@ -4,4 +4,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CurrencyViewer.Domain\CurrencyViewer.Domain.csproj" />
+    <ProjectReference Include="..\CurrencyViewer.Infrastructure\CurrencyViewer.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
