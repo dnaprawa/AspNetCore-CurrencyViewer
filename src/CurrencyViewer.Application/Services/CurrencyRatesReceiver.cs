@@ -3,6 +3,8 @@ using CurrencyViewer.Domain;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -22,6 +24,11 @@ namespace CurrencyViewer.Application
 
         public async Task<IEnumerable<CurrencyRateDto>> GetCurrencyRatesAsync(DateTime date)
         {
+            if(_config == null || string.IsNullOrWhiteSpace(_config?.BaseUrl) || !_config.CurrencyCodes.Any())
+            {
+                throw new InvalidOperationException("Invalid configuration");
+            }
+
             var data = new List<CurrencyRateDto>();
             foreach (var item in _config.CurrencyCodes)
             {
@@ -48,7 +55,7 @@ namespace CurrencyViewer.Application
             CurrencyRateDto currencyRate = null;
             if (response.IsSuccessStatusCode)
             {
-                using var responseStream = await response.Content.ReadAsStreamAsync();
+                var responseStream = await response.Content.ReadAsStreamAsync();
                 currencyRate = await JsonSerializer.DeserializeAsync<CurrencyRateDto>(responseStream);
             }
 
