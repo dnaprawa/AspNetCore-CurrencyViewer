@@ -14,7 +14,7 @@ namespace CurrencyViewer.Application.Models
     {
         public string No { get; set; }
         public string EffectiveDate { get; set; }
-        public string Bid { get; set; }
-        public string Ask { get; set; }
+        public double Bid { get; set; }
+        public double Ask { get; set; }
     }
 }
