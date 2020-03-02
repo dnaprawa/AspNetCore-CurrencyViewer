@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CurrencyViewer.API.Authentication;
 using CurrencyViewer.Application;
 using CurrencyViewer.Application.Interfaces;
 using CurrencyViewer.Application.Models;
+using CurrencyViewer.Application.Security;
 using CurrencyViewer.Application.Services;
 using CurrencyViewer.Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -31,6 +34,18 @@ namespace CurrencyViewer.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = ApiKeyAuthenticationOptions.DefaultScheme;
+                options.DefaultChallengeScheme = ApiKeyAuthenticationOptions.DefaultScheme;
+            })
+            .AddApiKeySupport(options => { });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(Policies.ReadonlyUsers, policy => policy.Requirements.Add(new ReadonlyUserRequirement()));
+            });
+
             services.AddControllers();
 
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
@@ -46,8 +61,10 @@ namespace CurrencyViewer.API
             services.AddScoped<ICurrencyRatesQueryService, CurrencyRatesQueryService>();
             services.AddScoped<ICurrencyRatesCommandService, CurrencyRatesCommandService>();
 
-            services.AddHttpClient();
+            services.AddHttpClient();            
 
+            services.AddSingleton<IAuthorizationHandler, ReadonlyUserAuthorizationHandler>();
+            services.AddScoped<IGetApiKeyQuery, GetApiKeyQuery>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,11 +75,12 @@ namespace CurrencyViewer.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
-
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
+            
+            app.UseHttpsRedirection();
 
             app.UseEndpoints(endpoints =>
             {
