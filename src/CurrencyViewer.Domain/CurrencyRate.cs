@@ -21,11 +21,13 @@ namespace CurrencyViewer.Domain
         public double AskValue { get; protected set; }
         public DateTime Date { get; protected set; }
         public DateTime ReceivedAt { get; protected set; }
+        public DateTime? UpdatedAt { get; protected set; }
 
         public void Update(double newBidValue, double newAskValue)
         {
             BidValue = newBidValue;
             AskValue = newAskValue;
+            UpdatedAt = DateTime.UtcNow;
         }
         
     }

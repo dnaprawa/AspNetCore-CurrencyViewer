@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200302073001_AddedUpdatedAtField.cs" />
+    <Compile Remove="Migrations\20200302073001_AddedUpdatedAtField.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CurrencyViewer.Domain\CurrencyViewer.Domain.csproj" />
   </ItemGroup>
 

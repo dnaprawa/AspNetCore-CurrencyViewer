@@ -23,6 +23,7 @@ namespace CurrencyViewer.API.Controllers
             {
                 return BadRequest(ModelState);
             }
+
             if(dateFrom == null || dateTo == null)
             {
                 return BadRequest("Invalid parameters");
