@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using CurrencyViewer.Application.Exceptions;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +35,16 @@ namespace CurrencyViewer.API.Filters
 
             var code = HttpStatusCode.InternalServerError;
 
+
+            if (context.Exception is BadRequestException)
+            {
+                code = HttpStatusCode.NotFound;
+            }
+
+            if (context.Exception is InvalidParameterException)
+            {
+                code = HttpStatusCode.NotFound;
+            }
 
             context.HttpContext.Response.ContentType = "application/json";
             context.HttpContext.Response.StatusCode = (int)code;
