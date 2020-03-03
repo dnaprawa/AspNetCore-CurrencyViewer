@@ -37,5 +37,20 @@ namespace CurrencyViewer.Application.Tests
 
             await Assert.ThrowsAsync<BadRequestException>(result);
         }
+
+        [Fact]
+        public async Task Should_Return_Data_For_Valid_Request()
+        {
+            var config = ConfigFactory.GetConfig();
+            var httpClientFactory = HttpClientFactoryProvider.GetHttpClientFactory(
+                new List<CurrencyRateDto>() { new CurrencyRateDto() { Rates = new List<Rate>() } }
+                );
+
+            ICurrencyRatesBetweenDatesReceiver receiver = new CurrencyRatesBetweenDatesReceiver(config, httpClientFactory);
+
+            var result = await receiver.GetCurrencyRatesBetweenDaysAsync(DateTime.UtcNow.Date.AddDays(-40), DateTime.UtcNow.Date.AddDays(-30));
+
+            Assert.NotEmpty(result);
+        }
     }
 }

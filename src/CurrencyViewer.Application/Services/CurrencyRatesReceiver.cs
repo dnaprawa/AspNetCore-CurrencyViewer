@@ -1,11 +1,11 @@
-﻿using CurrencyViewer.Application.Models;
+﻿using CurrencyViewer.Application.Exceptions;
+using CurrencyViewer.Application.Models;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace CurrencyViewer.Application
@@ -22,16 +22,16 @@ namespace CurrencyViewer.Application
 
         public async Task<IEnumerable<CurrencyRateDto>> GetCurrencyRatesAsync(DateTime date)
         {
-            if(_config == null || string.IsNullOrWhiteSpace(_config?.BaseUrl) || !_config.CurrencyCodes.Any())
+            if (date < DateTime.UtcNow.AddDays(-90))
             {
-                throw new InvalidOperationException("Invalid configuration");
-            }
+                throw new BadRequestException("Cannot find data for period longer than 90 days");
+            };
 
             var data = new List<CurrencyRateDto>();
             foreach (var item in _config.CurrencyCodes)
             {
                 var currencyRate = await GetSingleCurrencyRateAsync(item, date);
-                
+
                 data.Add(currencyRate);
             }
 
@@ -53,8 +53,12 @@ namespace CurrencyViewer.Application
             CurrencyRateDto currencyRate = null;
             if (response.IsSuccessStatusCode)
             {
-                var responseStream = await response.Content.ReadAsStreamAsync();
-                currencyRate = await JsonSerializer.DeserializeAsync<CurrencyRateDto>(responseStream);
+                var responseString = await response.Content.ReadAsStringAsync();
+                currencyRate = JsonConvert.DeserializeObject<CurrencyRateDto>(responseString);
+            }
+            else
+            {
+                throw new BadRequestException("Not Found - invalid data");
             }
 
             return currencyRate;
@@ -67,8 +71,8 @@ namespace CurrencyViewer.Application
             sb.Append(_config.BaseUrl);
             sb.Append("/api/exchangerates/rates/c");
             sb.Append($"/{currencyCode}");
-            sb.Append($"/{date.ToShortDateString()}");
-            sb.Append($"/format = json");
+            sb.Append($"/{date.ToString("yyyy-MM-dd")}");
+            sb.Append($"?format=json");
 
             return sb.ToString();
         }

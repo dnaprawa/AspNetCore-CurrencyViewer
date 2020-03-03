@@ -14,9 +14,30 @@ namespace CurrencyViewer.API.Controllers
     public class CurrencyViewerController : ControllerBase
     {
         private readonly ICurrencyRatesQueryService _currencyRatesQueryService;
-        public CurrencyViewerController(ICurrencyRatesQueryService currencyRatesQueryService)
+        private readonly ICurrencyRatesBetweenDatesReceiver _currencyRatesBetweenDatesReceiver;
+        public CurrencyViewerController(ICurrencyRatesQueryService currencyRatesQueryService,
+            ICurrencyRatesBetweenDatesReceiver currencyRatesBetweenDatesReceiver)
         {
             _currencyRatesQueryService = currencyRatesQueryService;
+            _currencyRatesBetweenDatesReceiver = currencyRatesBetweenDatesReceiver;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<CurrencyRateViewModel>>> Get([FromQuery] DateTime dateFrom, [FromQuery] DateTime dateTo)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (dateFrom == null || dateTo == null)
+            {
+                return BadRequest("Invalid parameters");
+            }
+
+            var result = await _currencyRatesBetweenDatesReceiver.GetCurrencyRatesBetweenDaysAsync(dateFrom, dateTo);
+
+            return Ok(result);
         }
 
         [HttpGet("average")]

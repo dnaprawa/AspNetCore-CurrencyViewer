@@ -1,4 +1,5 @@
-﻿using CurrencyViewer.Application.Models;
+﻿using CurrencyViewer.Application.Exceptions;
+using CurrencyViewer.Application.Models;
 using CurrencyViewer.Application.Tests.Infrastructure;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -40,6 +41,19 @@ namespace CurrencyViewer.Application.Tests
             Task result() => receiver.GetCurrencyRatesAsync(DateTime.UtcNow.Date);
 
             await Assert.ThrowsAsync<InvalidOperationException>(result);
+        }
+
+        [Fact]
+        public async Task When_DateFrom_Is_Lower_Than_90_Days_Should_Throw_Exception()
+        {
+            var config = ConfigFactory.GetConfig();
+            var httpClientFactory = HttpClientFactoryProvider.GetHttpClientFactory(new CurrencyRateDto() { Rates = new List<Rate>() });
+
+            ICurrencyRatesReceiver receiver = new CurrencyRatesReceiver(config, httpClientFactory);
+
+            Task result() => receiver.GetCurrencyRatesAsync(DateTime.UtcNow.Date.AddDays(-91));
+
+            await Assert.ThrowsAsync<BadRequestException>(result);
         }
     }
 }

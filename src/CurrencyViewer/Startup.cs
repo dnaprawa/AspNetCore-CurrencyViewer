@@ -56,12 +56,20 @@ namespace CurrencyViewer.API
             });
 
             services.Configure<CurrencyRatesConfig>(Configuration.GetSection(CurrencyRatesConfig.JsonPropertyName));
+            services.AddOptions<CurrencyRatesConfig>()
+                .Validate(options => !string.IsNullOrWhiteSpace(options.BaseUrl) 
+                && options.CurrencyCodes.Any()
+            );
+
+            services.Configure<CurrencyRatesConfig>(Configuration.GetSection(CurrencyRatesConfig.JsonPropertyName));
             services.AddHostedService<CurrencyRatesHostedService>();
             services.AddScoped<ICurrencyRatesReceiver, CurrencyRatesReceiver>();
             services.AddScoped<ICurrencyRatesBetweenDatesReceiver, CurrencyRatesBetweenDatesReceiver>();
             services.AddScoped<ICurrencyRatesProcessor, CurrencyRatesProcessor>();
             services.AddScoped<ICurrencyRatesQueryService, CurrencyRatesQueryService>();
             services.AddScoped<ICurrencyRatesCommandService, CurrencyRatesCommandService>();
+            services.AddScoped<CurrencyDbContextInitializer>();
+
 
             services.AddHttpClient();            
 
@@ -72,6 +80,13 @@ namespace CurrencyViewer.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var seeder = serviceScope.ServiceProvider.GetService<CurrencyDbContextInitializer>();
+                seeder.Migrate();
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

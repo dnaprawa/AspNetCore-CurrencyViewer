@@ -28,6 +28,8 @@ namespace CurrencyViewer.Application
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+                await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
+
                 using (var scope = Services.CreateScope())
                 {
                     var receiver =
@@ -55,6 +57,9 @@ namespace CurrencyViewer.Application
 
             if (_executingTask.IsCompleted)
             {
+                _logger.LogInformation(
+                    $"CurrencyRateHostedService task executed..."
+                    );
                 return _executingTask;
             }
 

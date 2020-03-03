@@ -18,21 +18,12 @@ namespace CurrencyViewer.Application.Services
         public async Task SaveCurrencyRates(IEnumerable<CurrencyRateDto> dtos)
         {
             var entities = dtos.Select(x => CurrencyMapper.MapFromDto(x));
+            var allEntities = _currencyDbContext.CurrencyRates.ToList();
 
-            foreach (var entity in entities)
-            {
-                if(!_currencyDbContext.CurrencyRates.Any(x => x.Date == entity.Date && x.CurrencyType == x.CurrencyType))
-                {
-                    await _currencyDbContext.CurrencyRates.AddAsync(entity);
-                }
-                else
-                {
-                    var currentValue = _currencyDbContext.CurrencyRates
-                        .Single(x => x.Date == entity.Date && x.CurrencyType == x.CurrencyType);
+            var toAdd = entities
+                .Where(x => !allEntities.Any(e => e.Date == x.Date && e.CurrencyType == x.CurrencyType));
 
-                    currentValue.Update(entity.BidValue, entity.AskValue);
-                }
-            }
+            _currencyDbContext.CurrencyRates.AddRange(toAdd);
 
             await _currencyDbContext.SaveChangesAsync();
         }
