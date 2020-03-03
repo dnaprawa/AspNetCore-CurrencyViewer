@@ -4,6 +4,7 @@ using CurrencyViewer.Application.Interfaces;
 using CurrencyViewer.Application.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,13 +19,16 @@ namespace CurrencyViewer.API.Controllers
         private readonly ICurrencyRatesQueryService _currencyRatesQueryService;
         private readonly ICurrencyRatesBetweenDatesReceiver _currencyRatesBetweenDatesReceiver;
         private readonly ICurrencyRatesCommandService _commandService;
+        private readonly CurrencyRatesConfig _config;
         public CurrencyViewerController(ICurrencyRatesQueryService currencyRatesQueryService,
             ICurrencyRatesBetweenDatesReceiver currencyRatesBetweenDatesReceiver,
-            ICurrencyRatesCommandService commandService)
+            ICurrencyRatesCommandService commandService,
+            IOptions<CurrencyRatesConfig> config)
         {
             _currencyRatesQueryService = currencyRatesQueryService;
             _currencyRatesBetweenDatesReceiver = currencyRatesBetweenDatesReceiver;
             _commandService = commandService;
+            _config = config.Value;
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CurrencyRateViewModel>>> Get([FromQuery] DateTime dateFrom, [FromQuery] DateTime dateTo)
@@ -35,7 +39,7 @@ namespace CurrencyViewer.API.Controllers
             }
 
             var result = await _currencyRatesQueryService.GetCurrencyRatesBetweenDates(dateFrom, dateTo);
-            if (result.Count() >= (dateTo - dateFrom).TotalDays)
+            if (result.Count() >= ((dateTo - dateFrom).TotalDays * _config.CurrencyCodes.Count()))
             {
                 return Ok(result);
             }

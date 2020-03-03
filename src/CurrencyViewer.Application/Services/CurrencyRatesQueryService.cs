@@ -36,7 +36,7 @@ namespace CurrencyViewer.Application.Services
 
             if (dateFrom < DateTime.UtcNow.AddDays(-90))
             {
-                throw new BadRequestException("Cannot find data for period longer than 90 days");
+                throw new BadRequestException("Cannot find data in period longer than 90 days");
             };
 
             var inDb = await _currencyDbContext.CurrencyRates
