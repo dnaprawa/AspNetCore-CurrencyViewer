@@ -1,4 +1,5 @@
-﻿using CurrencyViewer.Application.Interfaces;
+﻿using CurrencyViewer.Application.Exceptions;
+using CurrencyViewer.Application.Interfaces;
 using CurrencyViewer.Application.Models;
 using Microsoft.Extensions.Options;
 using System;
@@ -20,7 +21,17 @@ namespace CurrencyViewer.Application.Services
 
         public Task<IEnumerable<CurrencyRateDto>> GetCurrencyRatesBetweenDaysAsync(DateTime dateFrom, DateTime dateTo)
         {
-            throw new NotImplementedException();
+            if (dateFrom > dateTo)
+            {
+                throw new InvalidParameterException("DateFrom cannot be greater than DateTo");
+            }
+
+            if (dateFrom < DateTime.UtcNow.AddDays(-90))
+            {
+                throw new BadRequestException("Cannot find data for period longer than 90 days");
+            }
+
+            return null;
         }
     }
 }

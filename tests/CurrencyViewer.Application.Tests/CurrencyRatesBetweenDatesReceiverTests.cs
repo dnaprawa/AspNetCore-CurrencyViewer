@@ -12,7 +12,6 @@ namespace CurrencyViewer.Application.Tests
 {
     public class CurrencyRatesBetweenDatesReceiverTests
     {
-
         [Fact]
         public async Task When_DateFrom_Is_Greater_Than_DateFrom_Should_Throw_Exception()
         {
@@ -21,9 +20,22 @@ namespace CurrencyViewer.Application.Tests
 
             ICurrencyRatesBetweenDatesReceiver receiver = new CurrencyRatesBetweenDatesReceiver(config, httpClientFactory);
 
-            Task result() => receiver.GetCurrencyRatesBetweenDaysAsync(DateTime.UtcNow.Date.AddDays(-2), DateTime.UtcNow.Date.AddDays(-1));
+            Task result() => receiver.GetCurrencyRatesBetweenDaysAsync(DateTime.UtcNow.Date.AddDays(-1), DateTime.UtcNow.Date.AddDays(-2));
 
             await Assert.ThrowsAsync<InvalidParameterException>(result);
+        }
+
+        [Fact]
+        public async Task When_DateFrom_Is_Lower_Than_90_Days_Should_Throw_Exception()
+        {
+            var config = ConfigFactory.GetConfig();
+            var httpClientFactory = HttpClientFactoryProvider.GetHttpClientFactory(new CurrencyRateDto() { Rates = new List<Rate>() });
+
+            ICurrencyRatesBetweenDatesReceiver receiver = new CurrencyRatesBetweenDatesReceiver(config, httpClientFactory);
+
+            Task result() => receiver.GetCurrencyRatesBetweenDaysAsync(DateTime.UtcNow.Date.AddDays(-91), DateTime.UtcNow.Date.AddDays(-1));
+
+            await Assert.ThrowsAsync<BadRequestException>(result);
         }
     }
 }

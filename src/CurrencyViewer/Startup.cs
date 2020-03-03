@@ -58,6 +58,7 @@ namespace CurrencyViewer.API
             services.Configure<CurrencyRatesConfig>(Configuration.GetSection(CurrencyRatesConfig.JsonPropertyName));
             services.AddHostedService<CurrencyRatesHostedService>();
             services.AddScoped<ICurrencyRatesReceiver, CurrencyRatesReceiver>();
+            services.AddScoped<ICurrencyRatesBetweenDatesReceiver, CurrencyRatesBetweenDatesReceiver>();
             services.AddScoped<ICurrencyRatesProcessor, CurrencyRatesProcessor>();
             services.AddScoped<ICurrencyRatesQueryService, CurrencyRatesQueryService>();
             services.AddScoped<ICurrencyRatesCommandService, CurrencyRatesCommandService>();
