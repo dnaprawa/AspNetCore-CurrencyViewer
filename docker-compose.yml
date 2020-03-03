@@ -1,0 +1,32 @@
+version: '3.6'
+
+services:    
+  api:
+    build: 
+      context: .
+    container_name: api
+    ports:
+      - "5000:80"
+    networks:
+      - mynetwork
+    restart: always
+      
+  postgresdb:
+    image: postgres:10
+    ports:
+      - "5433:5432"
+    environment:
+        POSTGRES_PASSWORD: Sp22!hYw
+        POSTGRES_USER: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - mynetwork
+    restart: unless-stopped
+
+networks:
+  mynetwork:    
+
+volumes:
+  pgdata:
+
