@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CurrencyViewer.API.Authentication;
+using CurrencyViewer.API.Filters;
 using CurrencyViewer.Application;
 using CurrencyViewer.Application.Interfaces;
 using CurrencyViewer.Application.Models;
@@ -46,7 +47,7 @@ namespace CurrencyViewer.API
                 options.AddPolicy(Policies.ReadonlyUsers, policy => policy.Requirements.Add(new ReadonlyUserRequirement()));
             });
 
-            services.AddControllers();
+            services.AddControllers(options => options.Filters.Add(typeof(CustomExceptionFilterAttribute)));
 
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<CurrencyDbContext>(dbOptions =>
