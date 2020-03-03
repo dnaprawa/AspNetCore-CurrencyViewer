@@ -1,6 +1,7 @@
 ﻿using CurrencyViewer.Application.Infrastructure;
 using CurrencyViewer.Application.Interfaces;
 using CurrencyViewer.Application.Models;
+using CurrencyViewer.Domain;
 using CurrencyViewer.Infrastructure;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,13 @@ namespace CurrencyViewer.Application.Services
         }
         public async Task SaveCurrencyRates(IEnumerable<CurrencyRateDto> dtos)
         {
-            var entities = dtos.Select(x => CurrencyMapper.MapFromDto(x));
+            var entities = new List<CurrencyRate>();
+            foreach (var dto in dtos)
+            {
+                var singleCurrency = CurrencyMapper.MapyMany(dto);
+                entities.AddRange(singleCurrency);
+            }
+            
             var allEntities = _currencyDbContext.CurrencyRates.ToList();
 
             var toAdd = entities

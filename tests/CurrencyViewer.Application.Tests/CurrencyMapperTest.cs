@@ -25,7 +25,7 @@ namespace CurrencyViewer.Application.Tests
                 }
             };
 
-            var entity = CurrencyMapper.MapFromDto(dto);
+            var entity = CurrencyMapper.MapSingle(dto);
 
             Assert.NotNull(entity);
         }

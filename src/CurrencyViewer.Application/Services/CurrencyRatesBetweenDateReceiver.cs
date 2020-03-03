@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace CurrencyViewer.Application.Services
@@ -39,15 +38,13 @@ namespace CurrencyViewer.Application.Services
             {
                 var currencyRate = await GetSingleCurrencyRateAsync(item, dateFrom, dateTo);
 
-                data.AddRange(currencyRate);
-
+                data.Add(currencyRate);
             }
 
             return data;
         }
 
-
-        private async Task<IEnumerable<CurrencyRateDto>> GetSingleCurrencyRateAsync(string currencyCode, DateTime dateFrom, DateTime dateTo)
+        private async Task<CurrencyRateDto> GetSingleCurrencyRateAsync(string currencyCode, DateTime dateFrom, DateTime dateTo)
         {
             var url = PrepareUrl(currencyCode, dateFrom, dateTo);
 
@@ -59,18 +56,18 @@ namespace CurrencyViewer.Application.Services
 
             var response = await client.SendAsync(request);
 
-            IEnumerable<CurrencyRateDto> currencyRate = null;
+            CurrencyRateDto currencyRates = null;
             if (response.IsSuccessStatusCode)
             {
                 var responseString = await response.Content.ReadAsStringAsync();
-                currencyRate = JsonConvert.DeserializeObject<IEnumerable<CurrencyRateDto>>(responseString);
+                currencyRates = JsonConvert.DeserializeObject<CurrencyRateDto>(responseString);
             }
             else
             {
                 throw new BadRequestException("Not Found - invalid data");
             }
 
-            return currencyRate;
+            return currencyRates;
         }
 
         private string PrepareUrl(string currencyCode, DateTime dateFrom, DateTime dateTo)

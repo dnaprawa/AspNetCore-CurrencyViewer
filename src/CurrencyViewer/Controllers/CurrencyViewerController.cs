@@ -1,10 +1,12 @@
 ﻿using CurrencyViewer.API.Authentication;
+using CurrencyViewer.Application.Infrastructure;
 using CurrencyViewer.Application.Interfaces;
 using CurrencyViewer.Application.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CurrencyViewer.API.Controllers
@@ -15,13 +17,15 @@ namespace CurrencyViewer.API.Controllers
     {
         private readonly ICurrencyRatesQueryService _currencyRatesQueryService;
         private readonly ICurrencyRatesBetweenDatesReceiver _currencyRatesBetweenDatesReceiver;
+        private readonly ICurrencyRatesCommandService _commandService;
         public CurrencyViewerController(ICurrencyRatesQueryService currencyRatesQueryService,
-            ICurrencyRatesBetweenDatesReceiver currencyRatesBetweenDatesReceiver)
+            ICurrencyRatesBetweenDatesReceiver currencyRatesBetweenDatesReceiver,
+            ICurrencyRatesCommandService commandService)
         {
             _currencyRatesQueryService = currencyRatesQueryService;
             _currencyRatesBetweenDatesReceiver = currencyRatesBetweenDatesReceiver;
+            _commandService = commandService;
         }
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CurrencyRateViewModel>>> Get([FromQuery] DateTime dateFrom, [FromQuery] DateTime dateTo)
         {
@@ -30,14 +34,18 @@ namespace CurrencyViewer.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (dateFrom == null || dateTo == null)
+            var result = await _currencyRatesQueryService.GetCurrencyRatesBetweenDates(dateFrom, dateTo);
+            if (result.Count() >= (dateTo - dateFrom).TotalDays)
             {
-                return BadRequest("Invalid parameters");
+                return Ok(result);
             }
 
-            var result = await _currencyRatesBetweenDatesReceiver.GetCurrencyRatesBetweenDaysAsync(dateFrom, dateTo);
+            var retrieved = await _currencyRatesBetweenDatesReceiver.GetCurrencyRatesBetweenDaysAsync(dateFrom, dateTo);
+            await _commandService.SaveCurrencyRates(retrieved);
 
-            return Ok(result);
+            var newResult = await _currencyRatesQueryService.GetCurrencyRatesBetweenDates(dateFrom, dateTo);
+
+            return Ok(newResult);
         }
 
         [HttpGet("average")]

@@ -12,7 +12,7 @@ namespace CurrencyViewer.Application.Models
         [JsonProperty("code")]
         public string Code { get; set; }
         [JsonProperty("rates")]
-        public IEnumerable<Rate> Rates { get; set; }
+        public List<Rate> Rates { get; set; }
     }
 
     public class Rate
