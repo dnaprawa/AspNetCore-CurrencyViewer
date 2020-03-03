@@ -18,17 +18,10 @@ namespace CurrencyViewer.Application.Tests
         [Fact]
         public async Task Should_Return_Anything_For_Valid_Request()
         {
-            var options = new Mock<IOptions<CurrencyRatesConfig>>();
-            options.SetupGet(x => x.Value).Returns(new CurrencyRatesConfig() { BaseUrl = "http://api.nbp.pl", CurrencyCodes= new string[] { "usd", "eur" } });
-           
+            var config = ConfigFactory.GetConfig();
+            var httpClientFactory = HttpClientFactoryProvider.GetHttpClientFactory(new CurrencyRateDto() { Rates = new List<Rate>() });
 
-            var factoryMock = new Mock<IHttpClientFactory>();
-            var returnValue = new CurrencyRateDto() { Rates = new List<Rate>() };
-            var messageHandler = new MockHttpMessageHandler(JsonSerializer.Serialize<CurrencyRateDto>(returnValue), HttpStatusCode.OK);
-            var httpClient = new HttpClient(messageHandler);
-            factoryMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(httpClient);
-
-            ICurrencyRatesReceiver receiver = new CurrencyRatesReceiver(options.Object, factoryMock.Object);
+            ICurrencyRatesReceiver receiver = new CurrencyRatesReceiver(config, httpClientFactory);
 
             var result = await receiver.GetCurrencyRatesAsync(DateTime.UtcNow.Date);
 
@@ -40,13 +33,9 @@ namespace CurrencyViewer.Application.Tests
         {
             var options = new Mock<IOptions<CurrencyRatesConfig>>();
 
-            var factoryMock = new Mock<IHttpClientFactory>();
-            var returnValue = new CurrencyRateDto() { Rates = new List<Rate>() };
-            var messageHandler = new MockHttpMessageHandler(JsonSerializer.Serialize(returnValue), HttpStatusCode.OK);
-            var httpClient = new HttpClient(messageHandler);
-            factoryMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(httpClient);
+            var httpClientFactory = HttpClientFactoryProvider.GetHttpClientFactory(new CurrencyRateDto() { Rates = new List<Rate>() });
 
-            ICurrencyRatesReceiver receiver = new CurrencyRatesReceiver(options.Object, factoryMock.Object);
+            ICurrencyRatesReceiver receiver = new CurrencyRatesReceiver(options.Object, httpClientFactory);
 
             Task result() => receiver.GetCurrencyRatesAsync(DateTime.UtcNow.Date);
 
