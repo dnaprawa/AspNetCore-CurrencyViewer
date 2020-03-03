@@ -7,6 +7,7 @@ namespace CurrencyViewer.Application.Interfaces
 {
     public interface ICurrencyRatesQueryService
     {
-        Task<IEnumerable<CurrencyRateViewModel>> GetAverageCurrencyRates(DateTime dateFrom, DateTime dateTo);
+        Task<CurrencyRateAverageViewModel> GetAverageCurrencyRates(DateTime dateFrom, DateTime dateTo);
+        Task<CurrencyRateViewModel> GetCurrencyRatesBetweenDates(DateTime dateFrom, DateTime dateTo);
     }
 }

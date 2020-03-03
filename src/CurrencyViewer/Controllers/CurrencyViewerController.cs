@@ -21,14 +21,14 @@ namespace CurrencyViewer.API.Controllers
 
         [HttpGet("average")]
         [Authorize(Policy = Policies.ReadonlyUsers)]
-        public async Task<ActionResult<IEnumerable<CurrencyRateViewModel>>> GetAverageAsync([FromQuery] DateTime dateFrom, [FromQuery] DateTime dateTo)
-        {   
+        public async Task<ActionResult<IEnumerable<CurrencyRateAverageViewModel>>> GetAverageAsync([FromQuery] DateTime dateFrom, [FromQuery] DateTime dateTo)
+        {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if(dateFrom == null || dateTo == null)
+            if (dateFrom == null || dateTo == null)
             {
                 return BadRequest("Invalid parameters");
             }
