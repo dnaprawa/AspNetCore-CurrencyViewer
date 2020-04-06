@@ -27,6 +27,8 @@ jobs:
       with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          registry: registry.hub.docker.com/v2
-          repository: dnaprawa/currency-viewer
+          registry: dnaprawa.azurecr.io
+          repository: currency-viewer
           tags: v1
+          # Set build context as current (root) directory
+          path: .
