@@ -5,6 +5,12 @@ services:
     build: 
       context: .
     container_name: api
+    healthcheck:
+      test: curl --fail http://localhost:80/health || exit 1
+      interval: 20s
+      timeout: 1s
+      retries: 3
+      start_period: 10s
     ports:
       - "5000:80"
     networks:
