@@ -70,6 +70,7 @@ namespace CurrencyViewer.API
             services.AddScoped<ICurrencyRatesCommandService, CurrencyRatesCommandService>();
             services.AddScoped<CurrencyDbContextInitializer>();
 
+            services.AddHealthChecks();
 
             services.AddHttpClient();            
 
@@ -101,6 +102,7 @@ namespace CurrencyViewer.API
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHealthChecks("/health");
                 endpoints.MapControllers();
             });
         }

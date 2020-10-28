@@ -27,4 +27,6 @@ FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim
 WORKDIR /app
 COPY --from=build-env /app/out .
 
+HEALTHCHECK --interval=5s --timeout=10s --retries=3 CMD curl --fail http://localhost:80/health || exit 1
+
 ENTRYPOINT ["dotnet", "CurrencyViewer.API.dll"]
